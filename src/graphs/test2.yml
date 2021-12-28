@@ -1,0 +1,20 @@
+vertices:
+  in.v0: [-1.5, 0]
+  in.v1: [-0.5, 0]
+
+  out.v0: [0.5, 0]
+  out.v1: [1.5, -0.5]
+  out.v2: [1.5, 0.5]
+
+  tmp.v0: [2.5, 0]
+edges:
+  in.e0: [in.v0, 2]
+  in.e1: [in.v0, in.v1, 2]
+
+  io: [in.v1, out.v0, 2]
+
+  out.e0: [out.v1, out.v0, 2]
+  out.e1: [out.v0, out.v2, 2]
+  out.e2: [out.v2, out.v1, 2]
+
+  tmp.e0: [out.v2, tmp.v0]
