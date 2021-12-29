@@ -1,0 +1,41 @@
+groups:
+  or:
+    position: [-2, -2]
+    vertices:
+      x: [0, 0]
+      a: [-0.87, 0.5, hidden]
+      b: [0.87, 0.5, hidden]
+      c: [0, -1, hidden]
+    edges:
+      A: [x, a, 1]
+      B: [x, b, 1]
+      C: [c, x, 2]
+
+  and:
+    position: [2, -2]
+    vertices:
+      x: [0, 0]
+      a: [-0.87, 0.5, hidden]
+      b: [0.87, 0.5, hidden]
+      c: [0, -1, hidden]
+    edges:
+      A: [x, a, 2]
+      B: [x, b, 2]
+      C: [c, x, 2]
+  
+  converter:
+    position: [0, 2]
+    vertices:
+      a: [-1, 1, hidden]
+      b: [1, 1, hidden]
+      x: [0, 1]
+      y: [0, 0]
+      z: [0.7, -0.7]
+      h: [-0.7, -0.7, hidden]
+    edges:
+      A: [a, x, 1]
+      B: [x, b, 2]
+      C: [z, z, 2]
+      D: [z, y, 2]
+      E: [y, x, 1]
+      F: [h, y, 1]

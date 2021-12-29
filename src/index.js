@@ -91,14 +91,14 @@ const sketch = new p5((s) => {
     });
 
     // draw all vertices
-    Object.values(graph.vertices).forEach(vertex => {
-      const { position, constraintsSatisfied } = vertex;
+    Object.values(graph.vertices).filter(v => !v.hidden).forEach(vertex => {
+      const { position, constraintSatisfied } = vertex;
 
       // vertex transform
       t.push();
       t.translate(position);
       s.noStroke();
-      s.fill(constraintsSatisfied ? COLOR_VERTEX : COLOR_VERTEX_UNSATISFIED);
+      s.fill(constraintSatisfied ? COLOR_VERTEX : COLOR_VERTEX_UNSATISFIED);
 
       // store the vertex screen position
       vertex.screenPosition = t.apply(math.zeros(2));
@@ -136,25 +136,38 @@ const sketch = new p5((s) => {
     }
   }
 
-  s.mouseClicked = () => {
+  s.mousePressed = () => {
     // flip the active edge
     if (activeEdge) {
       graph.reverseEdge(activeEdge.id);
     }
   }
 
+  s.mouseReleased = () => {
+    // flip an edge back if the vertex constraints are not satisfied
+    if (activeEdge && !activeEdge.constraintSatisfied) {
+      graph.reverseEdge(activeEdge.id);
+    }
+  }
+
   s.mouseDragged = () => {
-    // clear any active edge
-    activeEdge = null;
+    if (activeEdge) return;
 
     const delta = math.matrix([s.movedX, s.movedY]);
     screenOffset = math.add(screenOffset, delta);
+    s.redraw();
+  }
+
+  s.mouseWheel = event => {
+    const delta = event.delta * -0.0003;
+    const scale = math.matrix([1 + delta, 1 + delta]);
+    screenScale = math.dotPow(screenScale, scale);
     s.redraw();
   }
 });
 
 // main function
 document.addEventListener("DOMContentLoaded", async () => {
-  const file = await import("./graphs/test2.yml");
+  const file = await import("./graphs/andor.yml");
   await loadGraph(graph, file);
 });

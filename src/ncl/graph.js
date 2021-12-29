@@ -35,14 +35,14 @@ export default class Graph extends EventEmitter {
     return this.vertices[id];
   }
 
-  addVertex(id, position = [0, 0]) {
+  addVertex(id, position = [0, 0], hidden = false) {
     id = String(id);
     if (this.hasVertex(id)) {
       throw new GraphError(`Vertex with id ${id} already exists`);
     }
 
     // create and add the vertex
-    const vertex = new Vertex(id, position);
+    const vertex = new Vertex(id, position, hidden);
     this.vertices[id] = vertex;
 
     this.emit("update", this);
@@ -141,12 +141,13 @@ export default class Graph extends EventEmitter {
 }
 
 export class Vertex {
-  constructor(id, position = [0, 0]) {
+  constructor(id, position = [0, 0], hidden = false) {
     this.id = String(id);
     this.position = math.matrix(position || [0, 0]);
     this.edges = {};
 
-    this.inflowMin = 2;
+    this.hidden = hidden || false;
+    this.inflowMin = hidden ? 0 : 2;
   }
 
   get incomingEdges() {
@@ -165,7 +166,7 @@ export class Vertex {
     return this.outgoingEdges.reduce((sum, edge) => sum + edge.weight, 0);
   }
 
-  get constraintsSatisfied() {
+  get constraintSatisfied() {
     return this.inflow >= this.inflowMin;
   }
 
@@ -209,6 +210,10 @@ export class Edge {
 
   get circular() {
     return this.from === this.to;
+  }
+
+  get constraintSatisfied() {
+    return this.from.constraintSatisfied && this.to.constraintSatisfied;
   }
 
   relativeDirection(vertex) {
