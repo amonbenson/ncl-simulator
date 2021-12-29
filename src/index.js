@@ -4,6 +4,7 @@ import * as math from "mathjs";
 import NCLMachine from "./ncl";
 import Transformer from "./transformer";
 import loadGraph from "./ncl/graphloader";
+import Converter from "./ncl/graph/component/converter";
 
 
 const ncl = new NCLMachine();
@@ -12,8 +13,8 @@ const graph = ncl.graph;
 const sketch = new p5((s) => {
   // sketch constants
   const COLOR_BACKGROUND = s.color(255);
-  const COLOR_VERTEX = s.color(0);
-  const COLOR_VERTEX_UNSATISFIED = s.color(255, 0, 0);
+  const COLOR_FOREGROUND = s.color(0);
+  const COLOR_UNSATISFIED = s.color(255, 0, 0);
   const COLOR_EDGE_SINGLE = s.color(255, 128, 120);
   const COLOR_EDGE_SINGLE_ACTIVE = s.color(255, 192, 192);
   const COLOR_EDGE_DOUBLE = s.color(0, 0, 255);
@@ -98,13 +99,45 @@ const sketch = new p5((s) => {
       t.push();
       t.translate(position);
       s.noStroke();
-      s.fill(constraintSatisfied ? COLOR_VERTEX : COLOR_VERTEX_UNSATISFIED);
+      s.fill(constraintSatisfied ? COLOR_FOREGROUND : COLOR_UNSATISFIED);
 
       // store the vertex screen position
-      vertex.screenPosition = t.apply(math.zeros(2));
+      //vertex.screenPosition = t.apply(math.zeros(2));
 
       // draw the vertex
       s.circle(0, 0, 0.25);
+
+      t.pop();
+    });
+
+    // draw all components
+    Object.values(graph.components).forEach(component => {
+      const { position, ports } = component;
+
+      // component transform
+      t.push();
+      t.translate(position);
+
+      switch(component.constructor) {
+        case Converter:
+          const r = 0.4;
+
+          s.noStroke();
+          s.fill(COLOR_EDGE_SINGLE);
+          s.circle(0, 0, r);
+          s.fill(COLOR_EDGE_DOUBLE);
+          s.arc(0, 0, r, r, -s.HALF_PI, s.HALF_PI);
+
+          s.noFill();
+          s.stroke(ports.port.constraintSatisfied ? COLOR_FOREGROUND : COLOR_UNSATISFIED);
+          s.strokeWeight(0.05);
+          s.circle(0, 0, r);
+
+          break;
+        default:
+          console.error("Default component draw routing not implemented.");
+          break;
+      }
 
       t.pop();
     });
@@ -168,6 +201,12 @@ const sketch = new p5((s) => {
 
 // main function
 document.addEventListener("DOMContentLoaded", async () => {
-  const file = await import("./graphs/andor.yml");
+  const file = await import("./graphs/basicGates.yml");
   await loadGraph(graph, file);
+
+  /* graph.addComponent(Converter, "conv", [0, 0]);
+  graph.addVertex("conv.a", [-1, 0], true);
+  graph.addVertex("conv.b", [1, 0], true);
+  graph.addEdge("conv.A", "conv.a", "conv.default", 1);
+  graph.addEdge("conv.B", "conv.default", "conv.b", 2); */
 });

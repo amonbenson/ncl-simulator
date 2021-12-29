@@ -1,11 +1,32 @@
 import yaml from "js-yaml";
 import * as math from "mathjs";
+import Converter from "./graph/component/converter";
+
+const components = Object.freeze({
+  converter: Converter
+});
+
 
 export class GraphLoaderError extends Error {
   constructor(message, internalError = undefined) {
     super(internalError ? `${message}: ${internalError.message}` : message);
     this.name = this.constructor.name;
     if (internalError) this.internalError = internalError;
+  }
+}
+
+export const parseComponent = (g, id, v, offset) => {
+  try {
+    const [x, y, type, ...args] = v;
+    const position = math.add(math.resize(math.matrix([x, y]), [2]), offset);
+    const ComponentClass = components[type];
+
+    g.addComponent(id, position, ComponentClass, ...args);
+  } catch (err) {
+    throw new GraphLoaderError(
+      `Could not create component from "${id}: ${v}".`,
+      err
+    );
   }
 }
 
@@ -48,17 +69,29 @@ export default async (g, data) => {
   g.clear();
 
   // load the document
-  const { vertices, edges, groups } = typeof(data) === 'string' ? await yaml.load(data) : data;
+  const doc = typeof(data) === 'string' ? await yaml.load(data) : data;
+  const components = doc.components || {};
+  const vertices = doc.vertices || {};
+  const edges = doc.edges || {};
+  const groups = doc.groups || {};
 
-  // create global vertices and edges
-  Object.entries(vertices || {}).forEach(([id, v]) => parseVertex(g, id, v));
-  Object.entries(edges || {}).forEach(([id, e]) => parseEdge(g, id, e));
+  // add the default group
+  groups._default = {
+    position: [0, 0],
+    components,
+    vertices,
+    edges
+  };
 
   // create groups
-  Object.entries(groups || {}).forEach(([groupId, { position, vertices, edges }]) => {
-    const offset = math.resize(math.matrix(position || [0, 0]), [2]);
+  Object.entries(groups).forEach(([groupId, group]) => {
+    const components = group.components || {};
+    const vertices = group.vertices || {};
+    const edges = group.edges || {};
+    const offset = math.resize(math.matrix(group.position || [0, 0]), [2]);
 
-    Object.entries(vertices || {}).forEach(([id, v]) => parseVertex(g, `${groupId}.${id}`, v, offset));
-    Object.entries(edges || {}).forEach(([id, e]) => parseEdge(g, `${groupId}.${id}`, e, groupId));
+    Object.entries(components).forEach(([id, c]) => parseComponent(g, `${groupId}.${id}`, c, offset));
+    Object.entries(vertices).forEach(([id, v]) => parseVertex(g, `${groupId}.${id}`, v, offset));
+    Object.entries(edges).forEach(([id, e]) => parseEdge(g, `${groupId}.${id}`, e, groupId));
   });
 };

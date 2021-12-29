@@ -22,9 +22,9 @@ groups:
       A: [x, a, 2]
       B: [x, b, 2]
       C: [c, x, 2]
-  
-  converter:
-    position: [0, 2]
+
+  converterInternals:
+    position: [-2, 2]
     vertices:
       a: [-1, 1, hidden]
       b: [1, 1, hidden]
@@ -39,3 +39,14 @@ groups:
       D: [z, y, 2]
       E: [y, x, 1]
       F: [h, y, 1]
+
+  converterSymbol:
+    position: [2, 2]
+    components:
+      conv: [0, 0, converter]
+    vertices:
+      a: [-1, 0, hidden]
+      b: [1, 0, hidden]
+    edges:
+      A: [a, conv.port, 1]
+      B: [conv.port, b, 2]
