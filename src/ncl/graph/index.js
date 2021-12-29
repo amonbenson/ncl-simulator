@@ -39,14 +39,14 @@ export default class Graph extends EventEmitter {
     return this.vertices[id];
   }
 
-  addVertex(id, position = [0, 0], hidden = false) {
+  addVertex(id, position = [0, 0], visible = true) {
     id = String(id);
     if (this.hasVertex(id)) {
       throw new GraphError(`Vertex with id ${id} already exists`);
     }
 
     // create and add the vertex
-    const vertex = new Vertex(id, position, hidden);
+    const vertex = new Vertex(id, position, visible);
     this.vertices[id] = vertex;
 
     this.emit("update", this);
@@ -81,7 +81,7 @@ export default class Graph extends EventEmitter {
     return this.edges[id];
   }
 
-  addEdge(id, fromId, toId, weight = 1) {
+  addEdge(id, fromId, toId, weight = 1, labelVisible = false) {
     id = String(id);
     fromId = String(fromId);
     toId = String(toId);
@@ -94,7 +94,7 @@ export default class Graph extends EventEmitter {
     const to = this.getVertex(toId);
 
     // create and add the edge to the graph and to both connecting vertices
-    const edge = new Edge(id, from, to, weight);
+    const edge = new Edge(id, from, to, weight, labelVisible);
     this.edges[id] = edge;
     from.edges[id] = edge;
     to.edges[id] = edge;

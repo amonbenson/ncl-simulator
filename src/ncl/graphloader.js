@@ -33,9 +33,9 @@ export const parseComponent = (g, id, v, offset) => {
 export const parseVertex = (g, id, v, offset) => {
   try {
     const position = math.add(math.resize(math.matrix(v), [2]), offset);
-    const hidden = v.includes('hidden');
+    const visible = !v.includes('hidden');
 
-    g.addVertex(id, position, hidden);
+    g.addVertex(id, position, visible);
   } catch (err) {
     throw new GraphLoaderError(
       `Could not create vertex from "${id}: ${v}".`,
@@ -46,8 +46,9 @@ export const parseVertex = (g, id, v, offset) => {
 
 export const parseEdge = (g, id, e, groupId = null) => {
   try {
-    let [from, to] = e.filter((entry) => isNaN(entry));
-    const weight = e.find((entry) => !isNaN(entry)) || 1;
+    let [from, to, weight] = e;
+    weight = Number(weight) || 1;
+    const labelVisible = e.includes('label');
 
     // resolve groups
     if (groupId) {
@@ -55,7 +56,7 @@ export const parseEdge = (g, id, e, groupId = null) => {
       to = `${groupId}.${to}`;
     }
 
-    g.addEdge(id, from, to || from, weight);
+    g.addEdge(id, from, to || from, weight, labelVisible);
   } catch (err) {
     throw new GraphLoaderError(
       `Could not create edge from "${id}: ${e}".`,

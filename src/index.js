@@ -15,7 +15,7 @@ const sketch = new p5((s) => {
   const COLOR_BACKGROUND = s.color(255);
   const COLOR_FOREGROUND = s.color(0);
   const COLOR_UNSATISFIED = s.color(255, 0, 0);
-  const COLOR_EDGE_SINGLE = s.color(255, 128, 120);
+  const COLOR_EDGE_SINGLE = s.color(255, 128, 128);
   const COLOR_EDGE_SINGLE_ACTIVE = s.color(255, 192, 192);
   const COLOR_EDGE_DOUBLE = s.color(0, 0, 255);
   const COLOR_EDGE_DOUBLE_ACTIVE = s.color(128, 128, 255);
@@ -63,7 +63,7 @@ const sketch = new p5((s) => {
 
     // draw all edges
     Object.values(graph.edges).forEach(edge => {
-      const { from, to, weight, center, delta } = edge;
+      const { id, from, to, weight, center, delta, labelPosition } = edge;
       const active = edge === activeEdge;
 
       if (weight <= 1) s.stroke(active ? COLOR_EDGE_SINGLE_ACTIVE : COLOR_EDGE_SINGLE);
@@ -89,11 +89,29 @@ const sketch = new p5((s) => {
         s.strokeWeight(0.1);
         s.circle(...c._data, r * 2);
       }
+
+      // draw a label
+      if (edge.labelVisible) {
+        t.push();
+        t.translate(labelPosition);
+
+        s.noStroke();
+        s.fill(COLOR_FOREGROUND);
+        s.textSize(0.3);
+        s.textAlign(s.CENTER, s.CENTER);
+
+        s.text(id.split(".").at(-1), 0, 0);
+
+        t.pop();
+      }
     });
 
     // draw all vertices
-    Object.values(graph.vertices).filter(v => !v.hidden).forEach(vertex => {
-      const { position, constraintSatisfied } = vertex;
+    Object.values(graph.vertices).forEach(vertex => {
+      const { position, constraintSatisfied, visible } = vertex;
+
+      // skip hidden vertices
+      if (!visible) return;
 
       // vertex transform
       t.push();

@@ -3,15 +3,15 @@ import * as math from "mathjs";
 import Edge from "./edge";
 
 export default class Vertex {
-  constructor(id, position = [0, 0], hidden = false) {
+  constructor(id, position = [0, 0], visible = true) {
     this.id = String(id);
     this.position = math.matrix(position || [0, 0]);
     this.edges = {};
 
-    this.hidden = hidden || false;
+    this.visible = Boolean(visible);
 
     // default constraint validator
-    this.constraintValidator = () => this.hidden ? true : this.inflow >= 2;
+    this.constraintValidator = () => this.visible ? this.inflow >= 2 : true;
   }
 
   get incomingEdges() {

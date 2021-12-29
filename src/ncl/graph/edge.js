@@ -3,7 +3,7 @@ import * as math from "mathjs";
 import Vertex from "./vertex";
 
 export default class Edge {
-  constructor(id, from, to, weight = 1) {
+  constructor(id, from, to, weight = 1, labelVisible = false) {
     if (!from || !to) {
       throw new GraphError(
         `Cannot create graph from vertices ${from} -> ${to}.`
@@ -14,6 +14,8 @@ export default class Edge {
     this.from = from;
     this.to = to;
     this.weight = Number(weight);
+
+    this.labelVisible = Boolean(labelVisible);
   }
 
   get circular() {
@@ -48,6 +50,22 @@ export default class Edge {
 
   get delta() {
     return math.subtract(this.to.position, this.from.position);
+  }
+
+  get labelPosition() {
+    const center = this.center;
+    const delta = this.delta;
+    let direction = math.dotDivide(delta, math.norm(delta));
+
+    // make sure the label is always on top
+    if (direction._data[0] > 0) {
+      direction = math.dotMultiply(direction, -1);
+    } else if (direction._data[0] === 0) {
+      direction = math.matrix([0, -1]);
+    }
+
+    const offset = math.rotate(direction, math.pi / 2);
+    return math.add(center, math.dotMultiply(offset, 0.3));
   }
 
   toString() {

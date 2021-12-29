@@ -7,9 +7,9 @@ groups:
       b: [0.87, 0.5, hidden]
       c: [0, -1, hidden]
     edges:
-      A: [x, a, 1]
-      B: [x, b, 1]
-      C: [c, x, 2]
+      A: [x, a, 1, label]
+      B: [x, b, 1, label]
+      C: [c, x, 2, label]
 
   and:
     position: [2, -2]
@@ -19,9 +19,9 @@ groups:
       b: [0.87, 0.5, hidden]
       c: [0, -1, hidden]
     edges:
-      A: [x, a, 2]
-      B: [x, b, 2]
-      C: [c, x, 2]
+      A: [x, a, 2, label]
+      B: [x, b, 2, label]
+      C: [c, x, 2, label]
 
   converterInternals:
     position: [-2, 2]
@@ -33,8 +33,8 @@ groups:
       z: [0.7, -0.7]
       h: [-0.7, -0.7, hidden]
     edges:
-      A: [a, x, 1]
-      B: [x, b, 2]
+      A: [a, x, 1, label]
+      B: [x, b, 2, label]
       C: [z, z, 2]
       D: [z, y, 2]
       E: [y, x, 1]
@@ -48,5 +48,5 @@ groups:
       a: [-1, 0, hidden]
       b: [1, 0, hidden]
     edges:
-      A: [a, conv.port, 1]
-      B: [conv.port, b, 2]
+      A: [a, conv.port, 1, label]
+      B: [conv.port, b, 2, label]
