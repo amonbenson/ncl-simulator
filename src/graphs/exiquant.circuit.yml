@@ -1,0 +1,70 @@
+groups:
+  loopback:
+    position: [3, 1]
+    muted: true
+    components:
+      tryin.conv: [0, 0, converter]
+      cnfin.conv: [2, 2, converter]
+    vertices:
+      and: [0, 2]
+    edges:
+      and.in0: [tryin.conv, and, flip]
+      and.in1: [cnfin.conv, and, flip]
+
+  cnf:
+    position: [0, -3]
+    muted: true
+    components:
+      x.conv: [-0.5, 0, converter]
+      nx.conv: [0.5, 0, converter]
+    vertices:
+      x.cap: [-0.5, -1]
+      v0: [0.5, -1]
+      v1: [5, -1]
+    edges:
+      x.end: [x.conv, x.cap, 2]
+      x.loop: [x.cap, x.cap, 2]
+      out0: [nx.conv, v0, 2, flip]
+      out1: [v0, v1, 2, flip]
+      out2: [v1, loopback.cnfin.conv, 2, flip]
+
+  exiquant:
+    position: [-3, 1]
+    components:
+      tryin.conv: [2, 0, converter]
+      latch.conv: [3, -1, converter]
+    vertices:
+      tryin: [0, 0, hidden]
+      
+      and: [3, 0]
+
+      latch.l: [3, -2]
+      latch.a: [2.5, -3]
+      latch.b: [3.5, -3]
+
+      x: [2.5, -4, hidden]
+      nx: [3.5, -4, hidden]
+
+      satout: [0, 2, hidden]
+    edges:
+      tryin: [tryin, tryin.conv, 2, flip]
+      tryout: [and, loopback.tryin.conv, 2, flip]
+
+      and.in0: [tryin.conv, and, flip]
+      and.in1: [latch.conv, and, flip]
+
+      latch.L: [latch.l, latch.conv, 2, flip]
+      latch.LA: [latch.l, latch.a, 2]
+      latch.LB: [latch.l, latch.b, 2]
+      latch.AB: [latch.a, latch.b]
+
+      X: [latch.a, cnf.x.conv, 1, label: "X"]
+      nX: [latch.b, cnf.nx.conv, 1, label: "¬X", flip]
+
+      satisfied: [satout, loopback.and, 2]
+    labels:
+      # - [2.5, -2, "Latch", right, center]
+      - [0, -0.25, "try in", left, center]
+      - [6, -0.25, "try out", right, center]
+      - [0, 1.75, "satisfied out", left, center]
+      - [6, 1.75, "satisfied in", right, center]

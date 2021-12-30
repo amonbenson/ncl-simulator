@@ -215,8 +215,8 @@ const sketch = (s) => {
   }
 
   s.mouseReleased = () => {
-    // flip an edge back if the vertex constraints are not satisfied
-    if (activeEdge && !activeEdge.constraintSatisfied) {
+    // flip an edge back if the vertex constraints are not satisfied anymore
+    if (activeEdge && !graph.constraintSatisfied) {
       graph.reverseEdge(activeEdge.id);
     }
   }
@@ -260,7 +260,7 @@ const sketch = (s) => {
 // main function
 const main = async () => {
   new p5(sketch);
-  const file = await import("./graphs/uniquant.yml");
+  const file = await import("./graphs/exiquant.yml");
   await loadGraph(graph, file);
 }
 

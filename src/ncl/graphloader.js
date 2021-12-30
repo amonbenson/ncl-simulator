@@ -108,7 +108,7 @@ export const parseLabel = (g, id, data, group) => {
     const position = parsePosition(x, y, group.position);
     const { muted } = parseConfig(data, group);
 
-    g.addLabel(labelId, position, text, String(halign) || CENTER, String(valign) || CENTER, muted);
+    g.addLabel(labelId, position, text, String(halign || CENTER), String(valign || CENTER), muted);
   } catch (err) {
     console.error(new GraphLoaderError(
       `Could not create label ${group.id}.${id}`,

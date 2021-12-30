@@ -10,6 +10,8 @@ groups:
       A: [x, a, 1, label]
       B: [x, b, 1, label]
       C: [c, x, 2, label]
+    labels:
+      - [0, 1, "\"AND Vertex\""]
 
   and:
     position: [2, -2]
@@ -22,6 +24,8 @@ groups:
       A: [x, a, 2, label]
       B: [x, b, 2, label]
       C: [c, x, 2, label]
+    labels:
+      - [0, 1, "\"OR Vertex\""]
 
   converterInternals:
     position: [-2, 2]
@@ -39,14 +43,18 @@ groups:
       D: [z, y, 2]
       E: [y, x, 1]
       F: [h, y, 1]
+    labels:
+      - [0, 1.5, "\"Converter (Subgraph)\""]
 
   converterSymbol:
-    position: [2, 2]
+    position: [2, 3]
     components:
       conv: [0, 0, converter]
     vertices:
       a: [-1, 0, hidden]
       b: [1, 0, hidden]
     edges:
-      A: [a, conv.port, 1, label]
-      B: [conv.port, b, 2, label]
+      A: [a, conv, 1, label]
+      B: [conv, b, 2, label]
+    labels:
+      - [0, 0.5, "\"Converter (Symbol)\""]
