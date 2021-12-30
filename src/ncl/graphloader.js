@@ -48,10 +48,10 @@ export const parseComponent = (g, id, data, group) => {
 
     g.addComponent(componentId, position, ComponentClass, Boolean(muted));
   } catch (err) {
-    throw new GraphLoaderError(
+    console.error(new GraphLoaderError(
       `Could not create component ${group.id}.${id}`,
       err
-    );
+    ));
   }
 }
 
@@ -64,10 +64,10 @@ export const parseVertex = (g, id, data, group) => {
 
     g.addVertex(vertexId, position, !hidden, Boolean(muted));
   } catch (err) {
-    throw new GraphLoaderError(
+    console.error(new GraphLoaderError(
       `Could not create vertex ${groupId}.${id}`,
       err
-    );
+    ));
   }
 }
 
@@ -94,10 +94,10 @@ export const parseEdge = (g, id, data, group) => {
       g.addLabel(`${edgeId}.label`, edge.labelPosition, text, CENTER, CENTER);
     }
   } catch (err) {
-    throw new GraphLoaderError(
+    console.error(new GraphLoaderError(
       `Could not create edge ${group.id}.${id}`,
       err
-    );
+    ));
   }
 }
 
@@ -110,10 +110,10 @@ export const parseLabel = (g, id, data, group) => {
 
     g.addLabel(labelId, position, text, String(halign) || CENTER, String(valign) || CENTER, muted);
   } catch (err) {
-    throw new GraphLoaderError(
+    console.error(new GraphLoaderError(
       `Could not create label ${group.id}.${id}`,
       err
-    );
+    ));
   }
 }
 

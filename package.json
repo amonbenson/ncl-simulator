@@ -6,7 +6,7 @@
   "main": "src/index.js",
   "source": "index.html",
   "scripts": {
-    "dev": "parcel",
+    "dev": "parcel --no-cache --log-level verbose index.html",
     "build": "parcel build"
   },
   "dependencies": {

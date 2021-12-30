@@ -1,0 +1,86 @@
+position: [-5, 0]
+components:
+  latch0.l.conv: [3, -1.5, converter]
+  latch0.a.conv: [6, -2, converter]
+  latch0.b.conv: [6, -1, converter]
+
+  satin.conv: [4.5, 3, converter]
+vertices:
+  tryin: [0, 0, hidden]
+  tryout: [10, 0, hidden]
+
+  tryin.split: [2, 0]
+  tryin.and: [3, 0]
+
+  latch0.l: [4, -1.5]
+  latch0.a: [5, -2]
+  latch0.b: [5, -1]
+
+  x.split: [7, -1]
+  nx.split: [8, -2]
+
+  x: [7, -4, hidden]
+  nx: [8, -4, hidden]
+
+  latch1.l.out: [8, 1.5]
+  latch1.l: [3, 1.5]
+  latch1.a: [2, 1]
+  latch1.b: [2, 2]
+
+  satin.split: [8, 3]
+  satin.and: [7, 3]
+  satout.and: [2, 3]
+
+  satout: [0, 3, hidden]
+  satin: [10, 3, hidden]
+edges:
+  tryin.and.in0: [tryin.split, tryin.and, flip]
+  tryin.and.in1: [latch0.l.conv, tryin.and, flip]
+
+  latch0.L: [latch0.l, latch0.l.conv, 2, flip]
+  latch0.LA: [latch0.l, latch0.a, 2]
+  latch0.LB: [latch0.l, latch0.b, 2]
+  latch0.AB: [latch0.a, latch0.b]
+  latch0.A: [latch0.a, latch0.a.conv, flip]
+  latch0.B: [latch0.b, latch0.b.conv, flip]
+
+  x.out: [x.split, x, flip]
+  nx.out: [nx.split, nx, flip]
+
+  latch0.A.out: [latch0.a.conv, nx.split, 2, flip]
+  latch0.B.out: [latch0.b.conv, x.split, 2, flip]
+
+  x.sat: [x.split, satin.and, flip]
+  nx.sat: [nx.split, latch1.l.out, flip]
+  
+  latch1.L: [latch1.l, latch1.l.out, 2]
+  latch1.LA: [latch1.l, latch1.a, 2]
+  latch1.LB: [latch1.l, latch1.b, 2, flip]
+  latch1.AB: [latch1.a, latch1.b]
+  latch1.A: [latch1.a, tryin.split]
+  latch1.B: [latch1.b, satout.and, flip]
+
+  satin.split.out0: [satin.split, latch1.l.out, flip]
+  satin.split.out1: [satin.split, satin.and, flip]
+  satin.conv.double: [satin.and, satin.conv, 2, flip]
+  satin.conv.single: [satin.conv, satout.and, flip]
+
+  tryin: [tryin, tryin.split, 2, flip]
+  tryout: [tryin.and, tryout, 2, flip]
+
+  satin: [satin, satin.split, 2, flip]
+  satout: [satout.and, satout, 2, flip]
+
+labels:
+  - [0, -0.25, "try in", left, center]
+  - [10, -0.25, "try out", right, center]
+  - [0, 2.75, "satisfied out", left, center]
+  - [10, 2.75, "satisfied in", right, center]
+
+  - [6.8, -3.5, "X", right, center]
+  - [8.2, -3.5, "¬X", left, center]
+
+  - [1.75, 0.5, "C", center, center]
+  - [2.5, 1, "D", center, center]
+  - [2.5, 2.1, "E", center, center]
+  - [5.5, 1.25, "L", center, center]

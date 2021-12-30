@@ -12,14 +12,14 @@ const graph = ncl.graph;
 
 const sketch = (s) => {
   // sketch constants
-  const COLOR_BACKGROUND = s.color(255);
-  const COLOR_FOREGROUND = s.color(0);
-  const COLOR_MUTED = s.color(255, 128);
-  const COLOR_UNSATISFIED = s.color(255, 0, 0);
-  const COLOR_EDGE_SINGLE = s.color(255, 128, 128);
-  const COLOR_EDGE_SINGLE_ACTIVE = s.color(255, 192, 192);
-  const COLOR_EDGE_DOUBLE = s.color(0, 0, 255);
-  const COLOR_EDGE_DOUBLE_ACTIVE = s.color(128, 128, 255);
+  const COLOR_BACKGROUND = s.color("#FFFFFF");
+  const COLOR_FOREGROUND = s.color("#031927");
+  const COLOR_MUTED = s.color("#FFFFFF80");
+  const COLOR_UNSATISFIED = s.color("#EF233C");
+  const COLOR_EDGE_SINGLE = s.color("#FE7E6D");
+  const COLOR_EDGE_SINGLE_ACTIVE = s.color("#FEA59A");
+  const COLOR_EDGE_DOUBLE = s.color("#2F3A8F");
+  const COLOR_EDGE_DOUBLE_ACTIVE = s.color("#5663C8");
 
   // sketch globals and variables
   const t = new Transformer(s);
@@ -258,8 +258,10 @@ const sketch = (s) => {
 };
 
 // main function
-document.addEventListener("DOMContentLoaded", async () => {
+const main = async () => {
   new p5(sketch);
-  const file = await import("./graphs/exiquant.yml");
+  const file = await import("./graphs/uniquant.yml");
   await loadGraph(graph, file);
-});
+}
+
+window.onload = () => main();
