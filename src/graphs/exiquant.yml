@@ -1,0 +1,37 @@
+groups:
+  exiquant:
+    position: [-3, 1]
+    components:
+      tryin.conv: [2, 0, converter]
+      latch.conv: [3, -1, converter]
+    vertices:
+      tryin: [0, 0, hidden]
+      tryout: [6, 0, hidden]
+      
+      and: [3, 0]
+
+      latch.l: [3, -2]
+      latch.a: [2.5, -3]
+      latch.b: [3.5, -3]
+
+      x: [2.5, -4, hidden]
+      nx: [3.5, -4, hidden]
+
+      satout: [0, 2, hidden]
+      satin: [6, 2, hidden]
+    edges:
+      try in: [tryin.conv.port, tryin, 2, label]
+      try out: [tryout, and, 2, label]
+
+      and.in0: [and, tryin.conv.port, 1]
+      and.in1: [and, latch.conv.port, 1]
+
+      latch.L: [latch.conv.port, latch.l, 2]
+      latch.LA: [latch.l, latch.a, 2]
+      latch.LB: [latch.b, latch.l, 2]
+      latch.AB: [latch.a, latch.b, 1]
+
+      X: [latch.a, x, 1, label]
+      nX: [nx, latch.b, 1, label]
+
+      satisfied in                                   satisfied out: [satout, satin, 2, label]

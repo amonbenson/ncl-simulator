@@ -1,4 +1,4 @@
-import EventEmitter from "events";
+import { GraphError } from ".";
 import * as math from "mathjs";
 import Edge from "./edge";
 

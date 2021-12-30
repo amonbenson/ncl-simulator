@@ -10,7 +10,7 @@ import Converter from "./ncl/graph/component/converter";
 const ncl = new NCLMachine();
 const graph = ncl.graph;
 
-const sketch = new p5((s) => {
+const sketch = (s) => {
   // sketch constants
   const COLOR_BACKGROUND = s.color(255);
   const COLOR_FOREGROUND = s.color(0);
@@ -97,7 +97,7 @@ const sketch = new p5((s) => {
 
         s.noStroke();
         s.fill(COLOR_FOREGROUND);
-        s.textSize(0.3);
+        s.textSize(0.25);
         s.textAlign(s.CENTER, s.CENTER);
 
         s.text(id.split(".").at(-1), 0, 0);
@@ -139,6 +139,7 @@ const sketch = new p5((s) => {
       switch(component.constructor) {
         case Converter:
           const r = 0.4;
+          s.rotate(component.orientation);
 
           s.noStroke();
           s.fill(COLOR_EDGE_SINGLE);
@@ -210,21 +211,36 @@ const sketch = new p5((s) => {
   }
 
   s.mouseWheel = event => {
-    const delta = event.delta * -0.0003;
-    const scale = math.matrix([1 + delta, 1 + delta]);
-    screenScale = math.dotPow(screenScale, scale);
+    const mouse = math.matrix([s.mouseX, s.mouseY]);
+    const screenCenter = math.matrix([s.width / 2, s.height / 2]);
+    const delta = event.delta * -0.001;
+    const scale = math.exp(math.matrix([delta, delta]));
+
+    screenScale = math.dotMultiply(screenScale, scale);
+    screenOffset = math.add(
+      math.dotMultiply(
+        screenOffset,
+        scale
+      ),
+      math.dotMultiply(
+        math.subtract(
+          mouse,
+          screenCenter
+        ),
+        math.subtract(
+          math.ones(2),
+          scale
+        )
+      )
+    );
+
     s.redraw();
   }
-});
+};
 
 // main function
 document.addEventListener("DOMContentLoaded", async () => {
-  const file = await import("./graphs/basicGates.yml");
+  new p5(sketch);
+  const file = await import("./graphs/exiquant.yml");
   await loadGraph(graph, file);
-
-  /* graph.addComponent(Converter, "conv", [0, 0]);
-  graph.addVertex("conv.a", [-1, 0], true);
-  graph.addVertex("conv.b", [1, 0], true);
-  graph.addEdge("conv.A", "conv.a", "conv.default", 1);
-  graph.addEdge("conv.B", "conv.default", "conv.b", 2); */
 });

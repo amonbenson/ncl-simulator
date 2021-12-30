@@ -1,6 +1,5 @@
-import EventEmitter from "events";
+import { GraphError } from ".";
 import * as math from "mathjs";
-import Vertex from "./vertex";
 
 export default class Edge {
   constructor(id, from, to, weight = 1, labelVisible = false) {
