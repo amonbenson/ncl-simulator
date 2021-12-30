@@ -12,7 +12,7 @@ export default class Vertex {
     this.muted = Boolean(muted);
 
     // default constraint validator
-    this.constraintValidator = () => this.visible ? this.inflow >= 2 : true;
+    this.constraintValidator = v => v.visible ? v.inflow >= 2 : true;
   }
 
   get incomingEdges() {
@@ -45,7 +45,7 @@ export default class Vertex {
   }
 
   get constraintSatisfied() {
-    return this.constraintValidator();
+    return this.constraintValidator(this);
   }
 
   getRelativeEdges(direction) {
@@ -54,8 +54,31 @@ export default class Vertex {
     );
   }
 
+  portConnected(numSingles, numDoubles) {
+    const singles = Object.values(this.edges).filter(e => e.weight === 1);
+    const doubles = Object.values(this.edges).filter(e => e.weight === 2);
+    return numSingles === singles.length && numDoubles === doubles.length;
+  }
+
+  portActive(portType) {
+    if (portType === Vertex.INPUT) return Object.values(this.edges).some(e => e.to === this);
+    if (portType === Vertex.OUTPUT) return Object.values(this.edges).some(e => e.from === this);
+    else throw new GraphError(`Invalid port type: ${portType}`);
+  }
+
+  get output() {
+    return this.portActive(Vertex.OUTPUT);
+  }
+
+  get input() {
+    return this.portActive(Vertex.INPUT);
+  }
+
   toString() {
     return `${this.id}(${this.position})`;
   }
 }
+
+Vertex.INPUT = Symbol("input");
+Vertex.OUTPUT = Symbol("output");
   

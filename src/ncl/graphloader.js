@@ -2,10 +2,14 @@ import yaml from "js-yaml";
 import * as math from "mathjs";
 import { CENTER } from "./graph/label";
 import Converter from "./graph/component/converter";
+import Existential from "./graph/component/existential";
+import Universal from "./graph/component/universal";
 
 
 const components = Object.freeze({
-  converter: Converter
+  converter: Converter,
+  existential: Existential,
+  universal: Universal
 });
 
 
@@ -43,10 +47,10 @@ export const parseComponent = (g, id, data, group) => {
     let [x, y, type] = data;
     const componentId = parseId(g, group.id, id);
     const position = parsePosition(x, y, group.position);
-    const { muted } = parseConfig(data, group);
+    const { muted, ...config } = parseConfig(data, group);
     const ComponentClass = components[type];
 
-    g.addComponent(componentId, position, ComponentClass, Boolean(muted));
+    g.addComponent(componentId, position, ComponentClass, Boolean(muted), config);
   } catch (err) {
     console.error(new GraphLoaderError(
       `Could not create component ${group.id}.${id}`,

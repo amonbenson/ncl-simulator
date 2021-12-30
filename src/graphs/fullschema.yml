@@ -1,0 +1,48 @@
+position: [-3.5, -1.5]
+components:
+  qx: [0, 0, existential, variable: "X"]
+  qy: [4, 0, universal, variable: "Y"]
+
+  tryout.conv: [9, 1, converter]
+  satin.conv: [10, 2, converter]
+vertices:
+  tryin: [-2, 1]
+
+  cnf.satisfied: [10, -1, hidden]
+  satin.and: [9, 2]
+
+  satout.latch: [-2, 2]
+  satout.latch.a: [-3, 1.5]
+  satout.latch.b: [-3, 2.5]
+
+  x: [1, -1, hidden]
+  nx: [2, -1, hidden]
+  y: [5, -1, hidden]
+  ny: [6, -1, hidden]
+edges:
+  # try line
+  tryin.loop: [tryin, tryin, 2]
+  tryin: [tryin, qx.tryin, 2, flip, label: "try in"]
+  try0: [qx.tryout, qy.tryin, 2, flip]
+  tryout: [qy.tryout, tryout.conv, 2, flip, label: "try out"]
+
+  # cnf satisfied in connections
+  cnf.satisfied: [cnf.satisfied, satin.conv, 2, flip]
+  satin.fromcnf: [satin.conv, satin.and, 1, flip]
+  satin.fromtry: [tryout.conv, satin.and, 1, flip]
+
+  # satisfied line
+  satin: [satin.and, qy.satin, 2, flip, label: "satisfied in"]
+  sat0: [qy.satout, qx.satin, 2, flip]
+  satout: [qx.satout, satout.latch, 2, flip, label: "satisfied out"]
+
+  # satisfied out latch
+  satout.latch.LA: [satout.latch.a, satout.latch, 2]
+  satout.latch.LB: [satout.latch.b, satout.latch, 2, flip]
+  satout.latch.AB: [satout.latch.a, satout.latch.b, 2, flip]
+
+  # cnf variables
+  x: [qx.out, x, flip, label: "X"]
+  nx: [qx.inv, nx, flip, label: "¬X"]
+  y: [qy.out, y, flip, label: "Y"]
+  ny: [qy.inv, ny, flip, label: "¬Y"]

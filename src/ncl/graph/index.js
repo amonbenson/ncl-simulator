@@ -142,7 +142,7 @@ export default class Graph extends EventEmitter {
     return this.components[id];
   }
 
-  addComponent(id, position = [0, 0], ComponentClass, muted = false) {
+  addComponent(id, position = [0, 0], ComponentClass, muted = false, config = {}) {
     if (!ComponentClass || !(ComponentClass.prototype instanceof Component)) {
       throw new GraphError(`ComponentClass must be a subclass of Component`);
     }
@@ -154,7 +154,7 @@ export default class Graph extends EventEmitter {
 
     // create a new component of the given class
     const vertexCreator = (...args) => this.addVertex(...args);
-    const component = new ComponentClass(id, position, vertexCreator, muted);
+    const component = new ComponentClass(id, position, vertexCreator, muted, config);
     this.components[id] = component;
 
     this.emit("update", this);
@@ -207,6 +207,10 @@ export default class Graph extends EventEmitter {
 
     this.emit("update", this);
     return label;
+  }
+
+  get constraintSatisfied() {
+    return Object.values(this.vertices).every(vertex => vertex.constraintSatisfied);
   }
 
   get bounds() {

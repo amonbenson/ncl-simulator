@@ -14,6 +14,7 @@ const sketch = (s) => {
   // sketch constants
   const COLOR_BACKGROUND = s.color("#FFFFFF");
   const COLOR_FOREGROUND = s.color("#031927");
+  const COLOR_FOREGROUND_LIGHTER = s.lerpColor(COLOR_BACKGROUND, COLOR_FOREGROUND, 0.5);
   const COLOR_MUTED = s.color("#FFFFFF80");
   const COLOR_UNSATISFIED = s.color("#EF233C");
   const COLOR_EDGE_SINGLE = s.color("#FE7E6D");
@@ -101,9 +102,10 @@ const sketch = (s) => {
   };
 
   const drawComponent = component => {
-    const { position, ports } = component;
+    const { position, size, label, constraintSatisfied, internalLatch } = component;
 
     // component transform
+    const foreground = constraintSatisfied ? COLOR_FOREGROUND : COLOR_UNSATISFIED;
     t.push();
     t.translate(position);
 
@@ -112,20 +114,43 @@ const sketch = (s) => {
         const r = 0.4;
         s.rotate(component.orientation);
 
+        // draw both semi circles
         s.noStroke();
         s.fill(COLOR_EDGE_SINGLE);
         s.circle(0, 0, r);
         s.fill(COLOR_EDGE_DOUBLE);
         s.arc(0, 0, r, r, -s.HALF_PI, s.HALF_PI);
 
+        // draw the outline
         s.noFill();
-        s.stroke(ports.port.constraintSatisfied ? COLOR_FOREGROUND : COLOR_UNSATISFIED);
+        s.stroke(foreground);
         s.strokeWeight(0.05);
         s.circle(0, 0, r);
 
         break;
       default:
-        console.error("Default component draw routing not implemented.");
+        // draw the outline
+        s.fill(COLOR_BACKGROUND);
+        s.stroke(foreground);
+        s.strokeWeight(0.05)
+
+        s.rect(0, 0, ...size._data);
+
+        // draw the label
+        s.noStroke();
+        s.fill(foreground);
+        s.textSize(0.5);
+        s.textAlign(s.CENTER, s.CENTER);
+    
+        s.text(label, ...math.dotDivide(size, 2)._data);
+
+        // draw an optional internal latch notifier
+        if (internalLatch) {
+          s.fill(COLOR_FOREGROUND_LIGHTER);
+          s.textSize(0.3);
+          s.text("latch set", ...math.add(math.dotDivide(size, 2), [0, 0.4])._data);
+        }
+
         break;
     }
 
@@ -260,7 +285,7 @@ const sketch = (s) => {
 // main function
 const main = async () => {
   new p5(sketch);
-  const file = await import("./graphs/exiquant.yml");
+  const file = await import("./graphs/fullschema.yml");
   await loadGraph(graph, file);
 }
 
