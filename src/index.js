@@ -89,21 +89,6 @@ const sketch = (s) => {
         s.strokeWeight(0.1);
         s.circle(...c._data, r * 2);
       }
-
-      // draw a label
-      if (edge.labelVisible) {
-        t.push();
-        t.translate(labelPosition);
-
-        s.noStroke();
-        s.fill(COLOR_FOREGROUND);
-        s.textSize(0.25);
-        s.textAlign(s.CENTER, s.CENTER);
-
-        s.text(id.split(".").at(-1), 0, 0);
-
-        t.pop();
-      }
     });
 
     // draw all vertices
@@ -157,6 +142,23 @@ const sketch = (s) => {
           console.error("Default component draw routing not implemented.");
           break;
       }
+
+      t.pop();
+    });
+
+    // draw all labels
+    Object.values(graph.labels).forEach(label => {
+      const { position, text, halign, valign } = label;
+
+      t.push();
+      t.translate(position);
+
+      s.noStroke();
+      s.fill(COLOR_FOREGROUND);
+      s.textSize(0.25);
+      s.textAlign(valign, halign);
+
+      s.text(text, 0, 0);
 
       t.pop();
     });

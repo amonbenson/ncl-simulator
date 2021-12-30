@@ -20,8 +20,8 @@ groups:
       satout: [0, 2, hidden]
       satin: [6, 2, hidden]
     edges:
-      try in: [tryin.conv.port, tryin, 2, label]
-      try out: [tryout, and, 2, label]
+      tryin: [tryin.conv.port, tryin, 2]
+      tryout: [tryout, and, 2]
 
       and.in0: [and, tryin.conv.port, 1]
       and.in1: [and, latch.conv.port, 1]
@@ -32,6 +32,16 @@ groups:
       latch.AB: [latch.a, latch.b, 1]
 
       X: [latch.a, x, 1, label]
-      nX: [nx, latch.b, 1, label]
+      nX: [nx, latch.b, 1, label: "¬X"]
 
-      satisfied in                                   satisfied out: [satout, satin, 2, label]
+      satio: [satout, satin, 2]
+    labels:
+      - [0, -0.25, "try in", left, center]
+      - [6, -0.25, "try out", right, center]
+      - [0, 1.75, "satisfied out", left, center]
+      - [6, 1.75, "satisfied in", right, center]
+
+  cnf:
+    position: [2, -2]
+    components:
+      x.conv: [2, 0, converter]

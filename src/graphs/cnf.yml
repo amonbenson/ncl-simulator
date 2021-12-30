@@ -1,39 +1,37 @@
-groups:
-  cnf:
-    position: [-2.5, -1.5]
-    components:
-      x.conv: [1, 0, converter]
-      y.conv: [1, 1, converter]
-      nx.conv: [1, 2, converter]
-      ny.conv: [1, 3, converter]
+position: [-2.5, -1.5]
+components:
+  x.conv: [1, 0, converter]
+  y.conv: [1, 1, converter]
+  nx.conv: [1, 2, converter]
+  ny.conv: [1, 3, converter]
 
-      or0.conv: [3, 1, converter]
-      or1.conv: [3, 2, converter]
-    vertices:
-      x: [0, 0, hidden]
-      y: [0, 1, hidden]
-      nx: [0, 2, hidden]
-      ny: [0, 3, hidden]
+  or0.conv: [3, 1, converter]
+  or1.conv: [3, 2, converter]
+vertices:
+  x: [0, 0, hidden]
+  y: [0, 1, hidden]
+  nx: [0, 2, hidden]
+  ny: [0, 3, hidden]
 
-      or0: [2, 1]
-      or1: [2, 2]
+  or0: [2, 1]
+  or1: [2, 2]
 
-      and: [4, 1]
-      z: [5, 1, hidden]
-    edges:
-      X: [x.conv.port, x, label]
-      Y: [y.conv.port, y, label]
-      nX: [nx, nx.conv.port, label]
-      nY: [ny, ny.conv.port, label]
+  and: [4, 1]
+  z: [5, 1, hidden]
+edges:
+  X: [x.conv.port, x, label]
+  Y: [y.conv.port, y, label]
+  nX: [nx, nx.conv.port, label: "¬X"]
+  nY: [ny, ny.conv.port, label: "¬Y"]
 
-      or0.in0: [or0, x.conv.port, 2]
-      or0.in1: [or0, y.conv.port, 2]
-      or1.in0: [nx.conv.port, or1, 2]
-      or1.in1: [ny.conv.port, or1, 2]
-      or0.out: [or0.conv.port, or0, 2]
-      or1.out: [or1, or1.conv.port, 2]
+  or0.in0: [or0, x.conv.port, 2]
+  or0.in1: [or0, y.conv.port, 2]
+  or1.in0: [nx.conv.port, or1, 2]
+  or1.in1: [ny.conv.port, or1, 2]
+  or0.out: [or0.conv.port, or0, 2]
+  or1.out: [or1, or1.conv.port, 2]
 
-      and.in0: [and, or0.conv.port, 1]
-      and.in1: [or1.conv.port, and, 1]
+  and.in0: [and, or0.conv.port, 1]
+  and.in1: [or1.conv.port, and, 1]
 
-      Z: [z, and, 2, label]
+  Z: [z, and, 2, label]

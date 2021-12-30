@@ -3,6 +3,7 @@ import * as math from "mathjs";
 import Vertex from "./vertex";
 import Edge from "./edge";
 import Component from "./component";
+import Label, { CENTER } from "./label";
 
 export class GraphError extends Error {
   constructor(message) {
@@ -17,6 +18,7 @@ export default class Graph extends EventEmitter {
     this.vertices = {};
     this.edges = {};
     this.components = {};
+    this.labels = {};
   }
 
   clear() {
@@ -33,7 +35,7 @@ export default class Graph extends EventEmitter {
   getVertex(id) {
     id = String(id);
     if (!this.hasVertex(id)) {
-      throw new GraphError(`Cannot find vertex ${id}.`);
+      throw new GraphError(`Cannot find vertex ${id}`);
     }
 
     return this.vertices[id];
@@ -75,7 +77,7 @@ export default class Graph extends EventEmitter {
   getEdge(id) {
     id = String(id);
     if (!this.hasEdge(id)) {
-      throw new GraphError(`Cannot find edge ${id}.`);
+      throw new GraphError(`Cannot find edge ${id}`);
     }
 
     return this.edges[id];
@@ -134,7 +136,7 @@ export default class Graph extends EventEmitter {
   getComponent(id) {
     id = String(id);
     if (!this.hasComponent(id)) {
-      throw new GraphError(`Cannot find component ${id}.`);
+      throw new GraphError(`Cannot find component ${id}`);
     }
 
     return this.components[id];
@@ -142,7 +144,7 @@ export default class Graph extends EventEmitter {
 
   addComponent(id, position = [0, 0], ComponentClass, ...args) {
     if (!ComponentClass || !(ComponentClass.prototype instanceof Component)) {
-      throw new GraphError(`ComponentClass must be a subclass of Component.`);
+      throw new GraphError(`ComponentClass must be a subclass of Component`);
     }
     if (this.hasComponent(id)) {
       throw new GraphError(`Component with id ${id} already exists`);
@@ -167,6 +169,44 @@ export default class Graph extends EventEmitter {
     delete this.components[id];
 
     return component;
+  }
+
+  hasLabel(id) {
+    id = String(id);
+    return this.labels.hasOwnProperty(id);
+  }
+
+  getLabel(id) {
+    id = String(id);
+    if (!this.hasLabel(id)) {
+      throw new GraphError(`Cannot find label ${id}`);
+    }
+
+    return this.labels[id];
+  }
+
+  addLabel(id, position = [0, 0], text = "", halign = CENTER, valign = CENTER) {
+    id = String(id);
+    if (this.hasLabel(id)) {
+      throw new GraphError(`Label with id ${id} already exists`);
+    }
+
+    // create and add the label
+    const label = new Label(id, position, text, halign, valign);
+    this.labels[id] = label;
+
+    this.emit("update", this);
+    return label;
+  }
+
+  removeLabel(id) {
+    const label = this.getLabel(id);
+
+    // remove the label
+    delete this.labels[id];
+
+    this.emit("update", this);
+    return label;
   }
 
   get bounds() {
