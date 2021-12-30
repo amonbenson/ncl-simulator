@@ -17,83 +17,101 @@ export class GraphLoaderError extends Error {
   }
 }
 
+const parseId = (g, groupId, id, existsIn = null) => {
+  // if the id exists on the graph, treat it as a global id
+  if (existsIn && g[existsIn][id]) return id;
+
+  // otherwise, treat it as a local group id
+  else return `${groupId}.${id}`;
+}
+
 const parsePosition = (x, y, offset = [0, 0]) => math.add(
   math.matrix([x, y]),
   math.matrix(offset)
 );
 
-const parseOptions = args => args
-  .filter(arg => typeof(arg) === "object" || typeof(arg) === "string")
-  .map(arg => typeof(arg) === "string" ? { [arg]: true } : arg)
-  .reduce((options, arg) => ({ ...options, ...arg }), {});
+const parseConfig = (data, groupConfig) => ({
+  ...groupConfig,
+  ...data
+    .filter(arg => typeof(arg) === "object" || typeof(arg) === "string")
+    .map(arg => typeof(arg) === "string" ? { [arg]: true } : arg)
+    .reduce((config, arg) => ({ ...config, ...arg }), {})
+});
 
-export const parseComponent = (g, id, data, offset) => {
+export const parseComponent = (g, id, data, group) => {
   try {
-    const [x, y, type, ...args] = data;
-    const position = parsePosition(x, y, offset);
+    let [x, y, type] = data;
+    const componentId = parseId(g, group.id, id);
+    const position = parsePosition(x, y, group.position);
+    const { muted } = parseConfig(data, group);
     const ComponentClass = components[type];
 
-    g.addComponent(id, position, ComponentClass, ...args);
+    g.addComponent(componentId, position, ComponentClass, Boolean(muted));
   } catch (err) {
     throw new GraphLoaderError(
-      `Could not create component ${id}`,
+      `Could not create component ${group.id}.${id}`,
       err
     );
   }
 }
 
-export const parseVertex = (g, id, data, offset) => {
+export const parseVertex = (g, id, data, group) => {
   try {
-    const [x, y] = data;
-    const position = parsePosition(x, y, offset)
-    const { hidden } = parseOptions(data);
+    let [x, y] = data;
+    const vertexId = parseId(g, group.id, id);
+    const position = parsePosition(x, y, group.position)
+    const { hidden, muted } = parseConfig(data, group);
 
-    g.addVertex(id, position, !hidden);
+    g.addVertex(vertexId, position, !hidden, Boolean(muted));
   } catch (err) {
     throw new GraphLoaderError(
-      `Could not create vertex ${id}`,
+      `Could not create vertex ${groupId}.${id}`,
       err
     );
   }
 }
 
-export const parseEdge = (g, id, data, groupId = null) => {
+export const parseEdge = (g, id, data, group) => {
   try {
     let [from, to, weight] = data;
-    weight = Number(weight) || 1;
-    const { label } = parseOptions(data);
+    const edgeId = parseId(g, group.id, id);
+    from = parseId(g, group.id, from, "vertices");
+    to = parseId(g, group.id, to, "vertices");
+    weight = isNaN(weight) ? 1 : weight;
+    const { muted, label, flip } = parseConfig(data, group);
 
-    // resolve groups
-    if (groupId) {
-      from = `${groupId}.${from}`;
-      to = `${groupId}.${to}`;
+    // flip the edge at creation
+    if (flip) {
+      [from, to] = [to, from];
     }
 
     // create the edge
-    const edge = g.addEdge(id, from, to || from, weight);
+    const edge = g.addEdge(edgeId, from, to || from, weight, muted);
 
     // create an optional label
     if (label) {
-      const text = label === true ? id.split(".").pop() : String(label);
-      g.addLabel(`${id}.label`, edge.labelPosition, text, CENTER, CENTER);
+      const text = label === true ? id : String(label);
+      g.addLabel(`${edgeId}.label`, edge.labelPosition, text, CENTER, CENTER);
     }
   } catch (err) {
     throw new GraphLoaderError(
-      `Could not create edge ${id}`,
+      `Could not create edge ${group.id}.${id}`,
       err
     );
   }
 }
 
-export const parseLabel = (g, id, data, offset) => {
+export const parseLabel = (g, id, data, group) => {
   try {
-    const [x, y, text, halign, valign] = data;
-    const position = parsePosition(x, y, offset);
+    let [x, y, text, halign, valign] = data;
+    const labelId = parseId(g, group.id, id);
+    const position = parsePosition(x, y, group.position);
+    const { muted } = parseConfig(data, group);
 
-    g.addLabel(id, position, text, String(halign) || CENTER, String(valign) || CENTER);
+    g.addLabel(labelId, position, text, String(halign) || CENTER, String(valign) || CENTER, muted);
   } catch (err) {
     throw new GraphLoaderError(
-      `Could not create label ${id}`,
+      `Could not create label ${group.id}.${id}`,
       err
     );
   }
@@ -123,16 +141,24 @@ export default async (g, data) => {
   };
 
   // create groups
+  const groupConfig = {
+    id: "default",
+    position: math.matrix([0, 0]),
+    muted: false
+  }
   Object.entries(groups).forEach(([groupId, group]) => {
+    groupConfig.id = groupId;
+    groupConfig.position = math.matrix(group.position || [0, 0]);
+    groupConfig.muted = Boolean(group.muted);
+
     const components = group.components || {};
     const vertices = group.vertices || {};
     const edges = group.edges || {};
     const labels = group.labels || [];
-    const offset = math.resize(math.matrix(group.position || [0, 0]), [2]);
 
-    Object.entries(components).forEach(([id, data]) => parseComponent(g, `${groupId}.${id}`, data, offset));
-    Object.entries(vertices).forEach(([id, data]) => parseVertex(g, `${groupId}.${id}`, data, offset));
-    Object.entries(edges).forEach(([id, data]) => parseEdge(g, `${groupId}.${id}`, data, groupId));
-    labels.forEach((data, index) => parseLabel(g, `${groupId}.label${index}`, data, offset));
+    Object.entries(components).forEach(([id, data]) => parseComponent(g, id, data, groupConfig));
+    Object.entries(vertices).forEach(([id, data]) => parseVertex(g, id, data, groupConfig));
+    Object.entries(edges).forEach(([id, data]) => parseEdge(g, id, data, groupConfig));
+    labels.forEach((data, index) => parseLabel(g, `label${index}`, data, groupConfig));
   });
 };

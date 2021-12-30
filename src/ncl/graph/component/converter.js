@@ -2,24 +2,30 @@ import Component from ".";
 import * as math from "mathjs";
 
 export default class Converter extends Component {
-  constructor(id, position, vertexCreator) {
-    super(id, position, vertexCreator, {
-      port: {
-        position: [0, 0],
-        constraintValidator: () => {
-          const { edges, inflow } = this.ports.port;
-          const singleEdges = Object.values(edges).filter(e => e.weight === 1);
-          const doubleEdges = Object.values(edges).filter(e => e.weight === 2);
+  constructor(id, position, vertexCreator, muted = false) {
+    super(
+      id,
+      position,
+      vertexCreator,
+      {
+        port: {
+          position: [0, 0],
+          constraintValidator: () => {
+            const { edges, inflow } = this.ports.port;
+            const singleEdges = Object.values(edges).filter(e => e.weight === 1);
+            const doubleEdges = Object.values(edges).filter(e => e.weight === 2);
 
-          // validate the number of connected edges
-          if (singleEdges.length !== 1) return false;
-          if (doubleEdges.length !== 1) return false;
+            // validate the number of connected edges
+            if (singleEdges.length !== 1) return false;
+            if (doubleEdges.length !== 1) return false;
 
-          // validate the inflow constraint
-          return inflow >= 1;
+            // validate the inflow constraint
+            return inflow >= 1;
+          }
         }
-      }
-    });
+      },
+      muted
+    );
   }
 
   get singleEdge() {

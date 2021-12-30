@@ -14,6 +14,7 @@ const sketch = (s) => {
   // sketch constants
   const COLOR_BACKGROUND = s.color(255);
   const COLOR_FOREGROUND = s.color(0);
+  const COLOR_MUTED = s.color(255, 128);
   const COLOR_UNSATISFIED = s.color(255, 0, 0);
   const COLOR_EDGE_SINGLE = s.color(255, 128, 128);
   const COLOR_EDGE_SINGLE_ACTIVE = s.color(255, 192, 192);
@@ -48,6 +49,113 @@ const sketch = (s) => {
     graph.on("update", () => s.redraw());
   };
 
+  const drawEdge = edge => {
+    const { from, to, weight, center, delta } = edge;
+    const active = edge === activeEdge;
+
+    const color = weight <= 1
+      ? (active ? COLOR_EDGE_SINGLE_ACTIVE : COLOR_EDGE_SINGLE)
+      : (active ? COLOR_EDGE_DOUBLE_ACTIVE : COLOR_EDGE_DOUBLE);
+    s.stroke(color);
+    s.noFill();
+
+    if (from !== to) {
+      // draw the undirected edge
+      s.strokeWeight(0.1);
+      s.line(...from.position._data, ...to.position._data);
+
+      // draw the direction arrow
+      const direction = math.atan2(delta._data[1], delta._data[0]);
+      s.strokeWeight(0.08);
+      s.arrow(center, 0.1, direction);
+    } else {
+      // draw a circular edge
+      const r = 0.3;
+      const c = math.add(
+        from.position,
+        math.dotMultiply(from.preferredEdgeDirection, r)
+      );
+      s.strokeWeight(0.1);
+      s.circle(...c._data, r * 2);
+    }
+  };
+
+  const drawVertex = vertex => {
+    const { position, constraintSatisfied, visible } = vertex;
+
+    // skip hidden vertices
+    if (!visible) return;
+
+    // vertex transform
+    t.push();
+    t.translate(position);
+
+    const color = constraintSatisfied ? COLOR_FOREGROUND : COLOR_UNSATISFIED;
+    s.noStroke();
+    s.fill(color);
+
+    // draw the vertex
+    s.circle(0, 0, 0.25);
+
+    t.pop();
+  };
+
+  const drawComponent = component => {
+    const { position, ports } = component;
+
+    // component transform
+    t.push();
+    t.translate(position);
+
+    switch(component.constructor) {
+      case Converter:
+        const r = 0.4;
+        s.rotate(component.orientation);
+
+        s.noStroke();
+        s.fill(COLOR_EDGE_SINGLE);
+        s.circle(0, 0, r);
+        s.fill(COLOR_EDGE_DOUBLE);
+        s.arc(0, 0, r, r, -s.HALF_PI, s.HALF_PI);
+
+        s.noFill();
+        s.stroke(ports.port.constraintSatisfied ? COLOR_FOREGROUND : COLOR_UNSATISFIED);
+        s.strokeWeight(0.05);
+        s.circle(0, 0, r);
+
+        break;
+      default:
+        console.error("Default component draw routing not implemented.");
+        break;
+    }
+
+    t.pop();
+  };
+
+  const drawLabel = label => {
+    const { position, text, halign, valign } = label;
+
+    t.push();
+    t.translate(position);
+
+    s.noStroke();
+    s.fill(COLOR_FOREGROUND);
+    s.textSize(0.25);
+    s.textAlign(valign, halign);
+
+    s.text(text, 0, 0);
+
+    t.pop();
+  };
+
+  const drawGraph = (graph, filter) => {
+    // draw all graph components
+    Object.values(graph.edges).filter(filter).forEach(drawEdge);
+    Object.values(graph.vertices).filter(filter).forEach(drawVertex);
+    Object.values(graph.components).filter(filter).forEach(drawComponent);
+    Object.values(graph.labels).filter(filter).forEach(drawLabel);
+  }
+
   s.draw = () => {
     s.background(COLOR_BACKGROUND);
 
@@ -61,107 +169,16 @@ const sketch = (s) => {
     // store the screen transform
     screenToGraph = t.getInverse();
 
-    // draw all edges
-    Object.values(graph.edges).forEach(edge => {
-      const { id, from, to, weight, center, delta, labelPosition } = edge;
-      const active = edge === activeEdge;
+    // draw all muted content
+    drawGraph(graph, c => c.muted);
+    s.noStroke();
+    s.fill(COLOR_MUTED);
 
-      if (weight <= 1) s.stroke(active ? COLOR_EDGE_SINGLE_ACTIVE : COLOR_EDGE_SINGLE);
-      else s.stroke(active ? COLOR_EDGE_DOUBLE_ACTIVE : COLOR_EDGE_DOUBLE);
-      s.noFill();
+    // draw the muted overlay in screen space coordinates
+    s.rect(-100, -100, 200, 200);
 
-      if (from !== to) {
-        // draw the undirected edge
-        s.strokeWeight(0.1);
-        s.line(...from.position._data, ...to.position._data);
-
-        // draw the direction arrow
-        const direction = math.atan2(delta._data[1], delta._data[0]);
-        s.strokeWeight(0.08);
-        s.arrow(center, 0.1, direction);
-      } else {
-        // draw a circular edge
-        const r = 0.3;
-        const c = math.add(
-          from.position,
-          math.dotMultiply(from.preferredEdgeDirection, r)
-        );
-        s.strokeWeight(0.1);
-        s.circle(...c._data, r * 2);
-      }
-    });
-
-    // draw all vertices
-    Object.values(graph.vertices).forEach(vertex => {
-      const { position, constraintSatisfied, visible } = vertex;
-
-      // skip hidden vertices
-      if (!visible) return;
-
-      // vertex transform
-      t.push();
-      t.translate(position);
-      s.noStroke();
-      s.fill(constraintSatisfied ? COLOR_FOREGROUND : COLOR_UNSATISFIED);
-
-      // store the vertex screen position
-      //vertex.screenPosition = t.apply(math.zeros(2));
-
-      // draw the vertex
-      s.circle(0, 0, 0.25);
-
-      t.pop();
-    });
-
-    // draw all components
-    Object.values(graph.components).forEach(component => {
-      const { position, ports } = component;
-
-      // component transform
-      t.push();
-      t.translate(position);
-
-      switch(component.constructor) {
-        case Converter:
-          const r = 0.4;
-          s.rotate(component.orientation);
-
-          s.noStroke();
-          s.fill(COLOR_EDGE_SINGLE);
-          s.circle(0, 0, r);
-          s.fill(COLOR_EDGE_DOUBLE);
-          s.arc(0, 0, r, r, -s.HALF_PI, s.HALF_PI);
-
-          s.noFill();
-          s.stroke(ports.port.constraintSatisfied ? COLOR_FOREGROUND : COLOR_UNSATISFIED);
-          s.strokeWeight(0.05);
-          s.circle(0, 0, r);
-
-          break;
-        default:
-          console.error("Default component draw routing not implemented.");
-          break;
-      }
-
-      t.pop();
-    });
-
-    // draw all labels
-    Object.values(graph.labels).forEach(label => {
-      const { position, text, halign, valign } = label;
-
-      t.push();
-      t.translate(position);
-
-      s.noStroke();
-      s.fill(COLOR_FOREGROUND);
-      s.textSize(0.25);
-      s.textAlign(valign, halign);
-
-      s.text(text, 0, 0);
-
-      t.pop();
-    });
+    // draw all visible content
+    drawGraph(graph, c => !c.muted);
 
     t.pop();
   };

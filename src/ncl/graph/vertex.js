@@ -3,12 +3,13 @@ import * as math from "mathjs";
 import Edge from "./edge";
 
 export default class Vertex {
-  constructor(id, position = [0, 0], visible = true) {
+  constructor(id, position = [0, 0], visible = true, muted = false) {
     this.id = String(id);
     this.position = math.matrix(position || [0, 0]);
     this.edges = {};
 
     this.visible = Boolean(visible);
+    this.muted = Boolean(muted);
 
     // default constraint validator
     this.constraintValidator = () => this.visible ? this.inflow >= 2 : true;

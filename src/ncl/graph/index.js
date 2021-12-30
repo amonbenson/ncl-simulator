@@ -41,14 +41,14 @@ export default class Graph extends EventEmitter {
     return this.vertices[id];
   }
 
-  addVertex(id, position = [0, 0], visible = true) {
+  addVertex(id, position = [0, 0], visible = true, muted = false) {
     id = String(id);
     if (this.hasVertex(id)) {
       throw new GraphError(`Vertex with id ${id} already exists`);
     }
 
     // create and add the vertex
-    const vertex = new Vertex(id, position, visible);
+    const vertex = new Vertex(id, position, visible, muted);
     this.vertices[id] = vertex;
 
     this.emit("update", this);
@@ -83,7 +83,7 @@ export default class Graph extends EventEmitter {
     return this.edges[id];
   }
 
-  addEdge(id, fromId, toId, weight = 1, labelVisible = false) {
+  addEdge(id, fromId, toId, weight = 1, muted = false) {
     id = String(id);
     fromId = String(fromId);
     toId = String(toId);
@@ -96,7 +96,7 @@ export default class Graph extends EventEmitter {
     const to = this.getVertex(toId);
 
     // create and add the edge to the graph and to both connecting vertices
-    const edge = new Edge(id, from, to, weight, labelVisible);
+    const edge = new Edge(id, from, to, weight, muted);
     this.edges[id] = edge;
     from.edges[id] = edge;
     to.edges[id] = edge;
@@ -142,7 +142,7 @@ export default class Graph extends EventEmitter {
     return this.components[id];
   }
 
-  addComponent(id, position = [0, 0], ComponentClass, ...args) {
+  addComponent(id, position = [0, 0], ComponentClass, muted = false) {
     if (!ComponentClass || !(ComponentClass.prototype instanceof Component)) {
       throw new GraphError(`ComponentClass must be a subclass of Component`);
     }
@@ -154,7 +154,7 @@ export default class Graph extends EventEmitter {
 
     // create a new component of the given class
     const vertexCreator = (...args) => this.addVertex(...args);
-    const component = new ComponentClass(id, position, vertexCreator, ...args);
+    const component = new ComponentClass(id, position, vertexCreator, muted);
     this.components[id] = component;
 
     this.emit("update", this);

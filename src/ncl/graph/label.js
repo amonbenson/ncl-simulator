@@ -9,11 +9,12 @@ export const RIGHT = "right";
 
 
 export default class Label {
-  constructor(id, position = [0, 0], text = "", valign = CENTER, halign = CENTER) {
+  constructor(id, position = [0, 0], text = "", valign = CENTER, halign = CENTER, muted = false) {
     this.id = String(id);
     this.position = math.matrix(position);
     this.text = String(text);
     this.halign = String(halign);
     this.valign = String(valign);
+    this.muted = Boolean(muted);
   }
 }

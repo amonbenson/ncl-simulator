@@ -2,7 +2,7 @@ import { GraphError } from ".";
 import * as math from "mathjs";
 
 export default class Edge {
-  constructor(id, from, to, weight = 1, labelVisible = false) {
+  constructor(id, from, to, weight = 1, muted = false) {
     if (!from || !to) {
       throw new GraphError(
         `Cannot create graph from vertices ${from} -> ${to}.`
@@ -13,8 +13,7 @@ export default class Edge {
     this.from = from;
     this.to = to;
     this.weight = Number(weight);
-
-    this.labelVisible = Boolean(labelVisible);
+    this.muted = Boolean(muted);
   }
 
   get circular() {
