@@ -42,3 +42,10 @@ edges:
   "!X": [qx.inv, cnf.!X, flip, label: "¬X"]
   Y: [qy.out, cnf.Y, flip, label: "Y"]
   "!Y": [qy.inv, cnf.!Y, flip, label: "¬Y"]
+
+labels:
+  - [1.5, 3.25, "Existential Quantifier"]
+  - [5.5, 3.25, "Universal Quantifier"]
+  - [5.5, -3.25, "CNF formula"]
+  
+  - [10.15, -0.5, "satisfied", left]
