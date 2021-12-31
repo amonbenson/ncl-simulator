@@ -3,22 +3,18 @@ components:
   qx: [0, 0, existential, variable: "X"]
   qy: [4, 0, universal, variable: "Y"]
 
+  cnf: [0, -3, cnf, formula: "(!X || !Y)"]
+
   tryout.conv: [9, 1, converter]
   satin.conv: [10, 2, converter]
 vertices:
   tryin: [-2, 1]
 
-  cnf.satisfied: [10, -1, hidden]
   satin.and: [9, 2]
 
   satout.latch: [-2, 2]
   satout.latch.a: [-3, 1.5]
   satout.latch.b: [-3, 2.5]
-
-  x: [1, -1, hidden]
-  nx: [2, -1, hidden]
-  y: [5, -1, hidden]
-  ny: [6, -1, hidden]
 edges:
   # try line
   tryin.loop: [tryin, tryin, 2]
@@ -42,7 +38,7 @@ edges:
   satout.latch.AB: [satout.latch.a, satout.latch.b, 2, flip]
 
   # cnf variables
-  x: [qx.out, x, flip, label: "X"]
-  nx: [qx.inv, nx, flip, label: "¬X"]
-  y: [qy.out, y, flip, label: "Y"]
-  ny: [qy.inv, ny, flip, label: "¬Y"]
+  X: [qx.out, cnf.X, flip, label: "X"]
+  "!X": [qx.inv, cnf.!X, flip, label: "¬X"]
+  Y: [qy.out, cnf.Y, flip, label: "Y"]
+  "!Y": [qy.inv, cnf.!Y, flip, label: "¬Y"]

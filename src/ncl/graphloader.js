@@ -4,12 +4,14 @@ import { CENTER } from "./graph/label";
 import Converter from "./graph/component/converter";
 import Existential from "./graph/component/existential";
 import Universal from "./graph/component/universal";
+import CNF from "./graph/component/cnf";
 
 
 const components = Object.freeze({
   converter: Converter,
   existential: Existential,
-  universal: Universal
+  universal: Universal,
+  cnf: CNF
 });
 
 
@@ -17,7 +19,7 @@ export class GraphLoaderError extends Error {
   constructor(message, internalError = undefined) {
     super(internalError ? `${message}: ${internalError.message}` : message);
     this.name = this.constructor.name;
-    if (internalError) this.internalError = internalError;
+    if (internalError) this.stack = internalError.stack;
   }
 }
 
@@ -69,7 +71,7 @@ export const parseVertex = (g, id, data, group) => {
     g.addVertex(vertexId, position, !hidden, Boolean(muted));
   } catch (err) {
     console.error(new GraphLoaderError(
-      `Could not create vertex ${groupId}.${id}`,
+      `Could not create vertex ${group.id}.${id}`,
       err
     ));
   }
