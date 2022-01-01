@@ -3,16 +3,17 @@
   "author": "Amon Benson",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
   "source": "index.html",
   "scripts": {
-    "dev": "parcel --no-cache --log-level verbose index.html",
-    "build": "parcel build"
+    "serve": "parcel serve",
+    "build": "parcel build --public-url ./"
   },
   "dependencies": {
+    "events": "^3.3.0",
     "js-yaml": "4.1.0",
     "mathjs": "10.0.0",
-    "p5": "1.4.0"
+    "p5": "1.4.0",
+    "p5.touchgui": "^0.5.2"
   },
   "devDependencies": {
     "@parcel/transformer-yaml": "^2.0.1",

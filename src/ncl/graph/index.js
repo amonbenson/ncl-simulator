@@ -24,6 +24,8 @@ export default class Graph extends EventEmitter {
   clear() {
     this.vertices = {};
     this.edges = {};
+    this.components = {};
+    this.labels = {};
     this.emit("update", this);
   }
 

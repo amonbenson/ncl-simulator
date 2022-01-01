@@ -5,10 +5,12 @@ import NCLMachine from "./ncl";
 import Transformer from "./transformer";
 import loadGraph from "./ncl/graphloader";
 import Converter from "./ncl/graph/component/converter";
+import graphlist from "./graphlist";
 
 
 const ncl = new NCLMachine();
 const graph = ncl.graph;
+
 
 const sketch = (s) => {
   // sketch constants
@@ -25,7 +27,7 @@ const sketch = (s) => {
   // sketch globals and variables
   const t = new Transformer(s);
   let screenOffset = math.matrix([0, 0]);
-  let screenScale = math.matrix([100, 100]);
+  let screenScale = math.matrix([90, 90]);
   let screenToGraph = t.get();
 
   let activeEdge = null;
@@ -48,6 +50,14 @@ const sketch = (s) => {
     // enable manual redraw
     s.noLoop();
     graph.on("update", () => s.redraw());
+
+    // create gui
+    graphlist.forEach((g, i) => {
+      const button = s.createButton(g.name);
+      button.mousePressed(() => loadGraph(graph, g));
+      button.parent("menu");
+      button.class("menu-item");
+    })
   };
 
   const drawEdge = edge => {
@@ -283,10 +293,7 @@ const sketch = (s) => {
 };
 
 // main function
-const main = async () => {
+window.onload = async () => {
   new p5(sketch);
-  const file = await import("./graphs/fullschema.yml");
-  await loadGraph(graph, file);
+  await loadGraph(graph, graphlist[0]);
 }
-
-window.onload = () => main();

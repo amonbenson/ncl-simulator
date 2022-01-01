@@ -1,4 +1,4 @@
-position: [-3.5, -1.5]
+position: [-4, 0]
 components:
   qx: [0, 0, existential, variable: "X"]
   qy: [4, 0, universal, variable: "Y"]

@@ -1,3 +1,4 @@
+name: "Existential"
 position: [-3, 1]
 components:
   tryin.conv: [2, 0, converter]
@@ -43,4 +44,6 @@ labels:
   - [3.8, -3.5, "¬X", left]
 
   - [3, -4.5, "CNF logic"]
-  - [3, 3, "\"Universal Quantifier Gadget\""]
+  - [3, -4.3, "..."]
+
+  - [3, 2.5, "\"Universal Quantifier Gadget\""]

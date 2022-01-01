@@ -1,4 +1,5 @@
-position: [-5, 0]
+name: "Universal"
+position: [-5, 0.5]
 components:
   latch0.l.conv: [3, -1.5, converter]
   latch0.a.conv: [6, -2, converter]
@@ -84,3 +85,8 @@ labels:
   - [2.5, 1, "D", center, center]
   - [2.5, 2.1, "E", center, center]
   - [5.5, 1.25, "L", center, center]
+
+  - [7.5, -4.5, "CNF logic"]
+  - [7.5, -4.3, "..."]
+
+  - [5, 3.5, "\"Existential Quantifier Gadget\""]
