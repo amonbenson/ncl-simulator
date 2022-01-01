@@ -1,3 +1,4 @@
+name: "CNF"
 position: [-2.5, -1.5]
 components:
   x.conv: [1, 0, converter]

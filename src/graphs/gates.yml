@@ -1,3 +1,4 @@
+name: "Gates"
 groups:
   or:
     position: [-2, -2]

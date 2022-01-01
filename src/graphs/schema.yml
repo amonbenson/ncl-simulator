@@ -1,3 +1,4 @@
+name: "Schema"
 position: [-4, 0]
 components:
   qx: [0, 0, existential, variable: "X"]
