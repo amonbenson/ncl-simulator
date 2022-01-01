@@ -4,9 +4,12 @@
   "version": "1.0.0",
   "description": "",
   "source": "index.html",
+  "homepage": "schlegelflegel.github.io/ncl-simulator",
   "scripts": {
     "serve": "parcel serve",
-    "build": "parcel build --public-url ./"
+    "build": "parcel build --public-url ./",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "events": "^3.3.0",
@@ -17,6 +20,7 @@
   },
   "devDependencies": {
     "@parcel/transformer-yaml": "^2.0.1",
+    "gh-pages": "^3.2.3",
     "parcel": "^2.0.1"
   },
   "keywords": []
