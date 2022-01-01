@@ -49,8 +49,8 @@ export default class Existential extends Component {
     // if tryout is active, tryin must be active too
     if (tryout.output && !tryin.input) return false;
 
-    // if tryout is active, only out or inv, but not both may be active
-    if (tryout.output && out.output && inv.output) return false;
+    // if tryout is active, either out or inv must be active
+    if (tryout.output && (out.output == inv.output)) return false;
 
     // if satout is active, satin must be active too
     if (satout.output && !satin.input) return false;

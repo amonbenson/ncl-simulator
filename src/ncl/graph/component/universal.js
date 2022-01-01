@@ -51,7 +51,7 @@ export default class Universal extends Component {
     // if tryout is active, tryin must be active too
     if (tryout.output && !tryin.input) return false;
 
-    // if tryout is active, only out or inv, but not both nor neither may be active
+    // if tryout is active, either out or inv must be active
     if (tryout.output && (out.output == inv.output)) return false;
 
     // if satout is active, satin, the internal latch, and out must be active
