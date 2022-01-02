@@ -46,4 +46,4 @@ labels:
   - [3, -4.5, "CNF logic"]
   - [3, -4.3, "..."]
 
-  - [3, 2.5, "\"Universal Quantifier Gadget\""]
+  - [3, 2.5, "\"Existential Quantifier Gadget\""]
