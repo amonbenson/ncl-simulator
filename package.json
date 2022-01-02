@@ -6,7 +6,7 @@
   "source": "index.html",
   "homepage": "schlegelflegel.github.io/ncl-simulator",
   "scripts": {
-    "serve": "parcel serve",
+    "dev": "parcel",
     "build": "parcel build --public-url ./",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"

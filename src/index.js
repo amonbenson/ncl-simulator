@@ -30,6 +30,7 @@ const sketch = (s) => {
   let screenScale = math.matrix([90, 90]);
   let screenToGraph = t.get();
 
+  let lastMouse = math.zeros(2);
   let activeEdge = null;
 
   // custom arrow function
@@ -243,6 +244,9 @@ const sketch = (s) => {
   }
 
   s.mousePressed = () => {
+    // reset the last mouse position
+    lastMouse = math.matrix([s.mouseX, s.mouseY]);
+
     // flip the active edge
     if (activeEdge) {
       graph.reverseEdge(activeEdge.id);
@@ -257,9 +261,12 @@ const sketch = (s) => {
   }
 
   s.mouseDragged = () => {
+    const mouse = math.matrix([s.mouseX, s.mouseY]);
+    const delta = math.subtract(mouse, lastMouse);
+    lastMouse = math.matrix(mouse);
+
     if (activeEdge) return;
 
-    const delta = math.matrix([s.movedX, s.movedY]);
     screenOffset = math.add(screenOffset, delta);
     s.redraw();
   }
