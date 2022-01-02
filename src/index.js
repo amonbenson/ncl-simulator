@@ -5,6 +5,7 @@ import NCLMachine from "./ncl";
 import Transformer from "./transformer";
 import loadGraph from "./ncl/graphloader";
 import Converter from "./ncl/graph/component/converter";
+import Universal from "./ncl/graph/component/universal";
 import graphlist from "./graphlist";
 
 
@@ -112,7 +113,7 @@ const sketch = (s) => {
   };
 
   const drawComponent = component => {
-    const { position, size, label, constraintSatisfied, internalLatch } = component;
+    const { position, size, label, constraintSatisfied } = component;
 
     // component transform
     const foreground = constraintSatisfied ? COLOR_FOREGROUND : COLOR_UNSATISFIED;
@@ -155,7 +156,7 @@ const sketch = (s) => {
         s.text(label, ...math.dotDivide(size, 2)._data);
 
         // draw an optional internal latch notifier
-        if (internalLatch) {
+        if (component.latchState) {
           s.fill(COLOR_FOREGROUND_LIGHTER);
           s.textSize(0.3);
           s.text("latch set", ...math.add(math.dotDivide(size, 2), [0, 0.4])._data);
@@ -216,6 +217,12 @@ const sketch = (s) => {
     drawGraph(graph, c => !c.muted);
 
     t.pop();
+
+    // update the latches of all universal quantifier components
+    const satisfied = graph.constraintSatisfied;
+    Object.values(graph.components)
+      .filter(c => c instanceof Universal)
+      .forEach(c => satisfied ? c.acceptLatch() : c.cancelLatch());
   };
 
   s.windowResized = () => {
