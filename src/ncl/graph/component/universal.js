@@ -57,8 +57,9 @@ export default class Universal extends Component {
     // if satout is active, satin, the internal latch, and out must be active
     if (satout.output && (!satin.input || !this.internalLatch || !out.output)) return false;
 
-    // if satin and inv out is active, the internal latch may be activated
-    if (satin.input && inv.output) this.internalLatch = true;
+    // if satin is valid and inv out is active, the internal latch may be activated
+    console.log();
+    if (satin.input && Object.values(satin.edges)[0]?.from.constraintSatisfied && inv.output) this.internalLatch = true;
 
     // if tryin is inactive, the internal latch may be deactivated
     if (!tryin.input) this.internalLatch = false;

@@ -1,10 +1,10 @@
 name: "Schema"
 position: [-4, 0]
 components:
-  qx: [0, 0, existential, variable: "X"]
-  qy: [4, 0, universal, variable: "Y"]
+  qx: [0, 0, universal, variable: "X"]
+  qy: [4, 0, existential, variable: "Y"]
 
-  cnf: [0, -3, cnf, formula: "(!X || !Y)"]
+  cnf: [0, -3, cnf, formula: "(X || !Y) && (!X || Y)"]
 
   tryout.conv: [9, 1, converter]
   satin.conv: [10, 2, converter]
@@ -45,8 +45,8 @@ edges:
   "!Y": [qy.inv, cnf.!Y, flip, label: "¬Y"]
 
 labels:
-  - [1.5, 3.25, "Existential Quantifier"]
-  - [5.5, 3.25, "Universal Quantifier"]
+  - [1.5, 3.25, "Universal Quantifier"]
+  - [5.5, 3.25, "Existential Quantifier"]
   - [5.5, -3.25, "CNF formula"]
   
   - [10.15, -0.5, "satisfied", left]

@@ -3,7 +3,7 @@ import p5 from "p5";
 import * as math from "mathjs";
 import NCLMachine from "./ncl";
 import Transformer from "./transformer";
-import loadGraph from "./ncl/graphloader";
+import { loadYaml, loadQbf } from "./ncl/graphloader";
 import Converter from "./ncl/graph/component/converter";
 import graphlist from "./graphlist";
 
@@ -53,11 +53,30 @@ const sketch = (s) => {
     graph.on("update", () => s.redraw());
 
     // create gui
+    const toggle = document.getElementById("menu-toggle");
+    const content = document.getElementById("menu-content");
+    toggle.addEventListener("click", () => {
+      if (toggle.classList.contains("collapsed")) {
+        toggle.classList.remove("collapsed");
+        content.classList.remove("collapsed");
+      } else {
+        toggle.classList.add("collapsed");
+        content.classList.add("collapsed");
+      }
+    })
+
     graphlist.forEach((g, i) => {
       const button = s.createButton(g.name);
-      button.mousePressed(() => loadGraph(graph, g));
-      button.parent("menu");
+      button.mousePressed(() => loadYaml(graph, g));
+      button.parent("menu-content");
       button.class("menu-item");
+    })
+
+    const customQbf = document.getElementById("custom-qbf");
+    customQbf.addEventListener("mousedown", e => e.stopPropagation());
+    customQbf.addEventListener("input", e => {
+      const value = e.target.value;
+      if (value) loadQbf(graph, value);
     })
   };
 
@@ -301,6 +320,7 @@ const sketch = (s) => {
 
 // main function
 window.onload = async () => {
-  new p5(sketch);
-  await loadGraph(graph, graphlist[0]);
+  new p5(sketch, "sketch");
+  // await loadYaml(graph, graphlist[0]);
+  await loadQbf(graph, "forall X exists Y: (X || !Y) && (!X || Y)");
 }
